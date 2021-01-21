@@ -52,3 +52,8 @@ In this function, we iterate over all the time steps and find who has the most c
 prices. It then uses settle to reward the agents who outbid their opponents. Once this is finished, we
 plot the profit of each agent. This profit does not include their assets (i.e. inventory). We can add this
 next.
+
+## Issues
+* plot inventory value and add invenotry to QL-agent. 
+
+* get Q-Learning agent working and look for possible 3rd party libraries to help
