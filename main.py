@@ -1,6 +1,7 @@
 from brownian import gmbrownian
 from demand import demand
 from agent import Agent
+from QLAgent import QLAgent
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -8,7 +9,7 @@ def makeAgents(agent_num):
     """
     agents: an array of Agent()'s of length agent_num
     """
-    agents = [Agent() for i in range(agent_num)]
+    agents = [Agent(0.05) for i in range(agent_num)]
     return agents
 
 def initialize(step, time, drift, volatility, initValue):
@@ -22,24 +23,24 @@ def initialize(step, time, drift, volatility, initValue):
     """
     price = gmbrownian(step, time, drift, volatility, initValue)
     buyOrders, sellOrders = demand(time/step)
+    print(buyOrders.shape)
+    print(sellOrders.shape)
     return price, buyOrders, sellOrders
 
-# def profitCalculation(agents, bid, ask, spread, price, buyOrders, sellOrders, askValue, bidValue):
-#     for i in range(bidValue):
-#         topBid = bidValue.argmax()
-#         lowAsk = askValue.argmin()
-#
-#         agent[topBid].cumulative_profit = topBid*(bid[topBid].num if bid[topBid].num > buyOrders else buyOrders)
-#
-#         bidValue = np.delete(bidValue,topBid)
-#         bid = np.delete(bid,topBid)
-#         askValue = np.delete(askValue,lowAsk)
-#         ask = np.delete(ask,lowAsk)
-#
+
+def profitCalculation(agents, bid, ask, spread, price, buyOrders, sellOrders,agent_num):
+    for i in range(len(price)):    #loop over every value in the array price
+        for j in range(agent_num):  #For each price get the bid and ask of each agent
+            bid[j], ask[j] = agents[j].quote(price[i], buyOrders[i], sellOrders[i])
+        sellWinner = ask.argmin()
+        buyWinner = bid.argmax()
+        for j in range(agent_num):
+            agents[j].settle(sellOrders[i], bid[buyWinner], buyWinner, buyOrders[i], ask[sellWinner], sellWinner)
+
 
 def simulation():
     step = 0.25
-    time= 100
+    time= 1000
     drift = 0.025
     volatility = 0.1
     initValue = 20
@@ -49,23 +50,15 @@ def simulation():
     price, buyOrders, sellOrders = initialize(step, time, drift, volatility, initValue)
     #get agents
     agents = makeAgents(agent_num)
-
+    # qag = QLAgent()
+    # agents.append(qag)
+    # agent_num += 1
     #initialize the bid, ask and spread arrays
     bid = np.zeros(agent_num)
     ask = np.zeros(agent_num)
     spread = np.zeros(agent_num)
 
-    for i in range(len(price)):    #loop over every value in the array price
-        for j in range(agent_num):  #For each price get the bid and ask of each agent
-            if i == 0:
-                bid[j], ask[j] = agents[j].quote(price[i], 50, 50)  #if i==0, have a demand of 50,50
-            else:
-                bid[j], ask[j] = agents[j].quote(price[i], buyOrders[i-1], sellOrders[i-1])
-            spread[j] = ask[j] - bid[j] #define the spread for each bid-ask
-
-        winner = spread.argmin()    #this returns the index of the tightest spread
-
-        agents[winner].cumulative_profit(spread[winner], abs(buyOrders[i]-sellOrders[i]))   #winner cashes in
+    profitCalculation(agents, bid, ask, spread, price, buyOrders, sellOrders, agent_num)
 
     for agent in agents:
         plt.plot(agent.profit)  #plot the agents

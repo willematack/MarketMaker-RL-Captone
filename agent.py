@@ -1,30 +1,44 @@
 from itertools import count
 from decimal import Decimal
+import numpy as np
 import random
 
 class Agent:
     _ids = count(0)
 
-    def __init__(self):
+    def __init__(self, emax):
         self._id = next(self._ids)
+        self.emax = emax
         self.profit = [0]
+        self.inventory = [0]
         return
 
-    def cumulative_profit(self, spread, volume):
-        self.profit.append(self.profit[-1] + round(Decimal(volume*spread),2))
-        return
+    def settle(self,sellOrder, bid, buyWinner, buyOrder, ask, sellWinner):
+        print(self._id)
+        if self._id == buyWinner:
+            self.inventory.append(self.inventory[-1] + buyOrder)
+            self.profit.append(self.profit[-1] - buyOrder*buyWinner)
+        elif self._id == sellWinner:
+            print('yup')
+            self.inventory.append(self.inventory[-1] - sellOrder)
+            self.profit.append(self.profit[-1] + buyOrder*buyWinner)
+        else:
+            self.profit.append(self.profit[-1])
 
     def quote(self, price, buyOrder, sellOrder):
-        bidSpread, askSpread = self.spread(buyOrder-sellOrder)
+        """
+        gets the bid and ask spread,
+        """
+        bidSpread, askSpread = self.spread()
         bid, ask = self.bid_ask(price, bidSpread, askSpread, buyOrder, sellOrder)
         return bid, ask
 
     def bid_ask(self, price, bidSpread, askSpread, buyOrder, sellOrder):
-        bid = round(Decimal(price-bidSpread),2)
-        ask = round(Decimal(price + askSpread),2)
+        bid = round(Decimal(price*(1-bidSpread)),2)
+        ask = round(Decimal(price* (1+ askSpread)),2)
         return bid, ask
 
-    def spread(self, prevDemand):
+    def spread(self):
         """
         normalize: This will normalize the spread value to something that makes
             sense. Because prevDemand floats between ~ 100 and -100, it has been
@@ -41,8 +55,10 @@ class Agent:
             in the favourable direction. i.e. if the prevDemand is less than 0,
             more people are selling, thus the ask price should be cheaper.
         """
-        normalize = random.uniform(75,100)
-        spread = abs(prevDemand/normalize)
-        bidSpread = spread - 0.05 if prevDemand > 0 else spread
-        askSpread = spread - 0.05 if prevDemand < 0 else spread
+        # normalize = random.uniform(75,100)
+        # spread = abs(prevDemand/normalize)
+        # bidSpread = spread - 0.05 if prevDemand > 0 else spread
+        # askSpread = spread - 0.05 if prevDemand < 0 else spread
+        bidSpread = random.uniform(0, self.emax)
+        askSpread = random.uniform(0, self.emax)
         return bidSpread, askSpread
