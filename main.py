@@ -63,6 +63,9 @@ def simulation():
     for agent in agents:
         plt.plot(agent.profit)  #plot the agents
         plt.legend([0,1,2,3,4])
+    plt.ylabel('Profit')
+    plt.xlabel('Timestep')
+    plt.title('Market Simulation Agent Performance')
     plt.show()
     return agents
 

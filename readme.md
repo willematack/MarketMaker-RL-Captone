@@ -59,5 +59,11 @@ next.
 * get Q-Learning agent working and look for possible 3rd party libraries to help
 
 
-## Tasks
+## Tasks (not started)
 * create GUI
+* Generalize our agent so that it can use any RL algorithm (Q-learning, etc.)
+* Implement Q-learning libraries for our agent instead of using matrices
+
+## Tasks (started)
+* Track inventory and transactions
+* Create more detailed simulation diagram
