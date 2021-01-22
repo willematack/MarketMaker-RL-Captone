@@ -57,3 +57,7 @@ next.
 * plot inventory value and add invenotry to QL-agent. 
 
 * get Q-Learning agent working and look for possible 3rd party libraries to help
+
+
+## Tasks
+* create GUI
