@@ -66,4 +66,9 @@ next.
 
 ## Tasks (started)
 * Track inventory and transactions
+* Visualize inventory and trades over time, plot 
 * Create more detailed simulation diagram
+
+## tasks (done)
+* plot ref price
+* track trades
