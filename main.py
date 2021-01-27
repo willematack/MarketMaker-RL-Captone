@@ -60,13 +60,36 @@ def simulation():
 
     profitCalculation(agents, bid, ask, spread, price, buyOrders, sellOrders, agent_num)
 
+    #plotting
+    plt.figure(figsize=(18, 10))
+
+    #plot ref price
+    plt.subplot(131)
+    plt.plot(price)
+    plt.grid(True)    
+    plt.xlabel('Timestep')
+    plt.ylabel('Reference Price ($)')
+    plt.title('Reference Price')
+
+    #plot competitor agent performance
+    plt.subplot(132)
     for agent in agents:
+        print(agent._id, agent.trades)
         plt.plot(agent.profit)  #plot the agents
         plt.legend([0,1,2,3,4])
-    plt.ylabel('Profit')
+    plt.ylabel('Profit ($)')
     plt.xlabel('Timestep')
-    plt.title('Market Simulation Agent Performance')
+    plt.title('Agent Profit')
+    plt.grid(True)
+
+    #plot big/ask
+    plt.subplot(132)
+    plt.plot(bid)
+    plt.plot(ask)
+    plt.suptitle('Market Maker Agent Simulation Results')
+
     plt.show()
+
     return agents
 
 simulation()

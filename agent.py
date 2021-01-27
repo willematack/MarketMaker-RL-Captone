@@ -11,19 +11,24 @@ class Agent:
         self.emax = emax
         self.profit = [0]
         self.inventory = [0]
+        self.trades = []
         return
 
     def settle(self,sellOrder, bid, buyWinner, buyOrder, ask, sellWinner):
-        print(self._id)
+        #print(self._id)
         if self._id == buyWinner:
             self.inventory.append(self.inventory[-1] + buyOrder)
             self.profit.append(self.profit[-1] - buyOrder*buyWinner)
+
+            self.trades.append(["Buy", buyOrder])#record trade
         elif self._id == sellWinner:
-            print('yup')
+            #print('yup')
             self.inventory.append(self.inventory[-1] - sellOrder)
             self.profit.append(self.profit[-1] + buyOrder*buyWinner)
+            self.trades.append(["Sell", buyOrder]) #record trade
         else:
             self.profit.append(self.profit[-1])
+            self.trades.append(["None", 0]) #record trade
 
     def quote(self, price, buyOrder, sellOrder):
         """

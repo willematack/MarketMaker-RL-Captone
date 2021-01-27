@@ -9,4 +9,6 @@ def gmbrownian(step, time, drift, volatility, initValue):
     t = np.linspace(0, time, iter)
     br = np.cumsum(dist)*sqrt(step)
     price = initValue + (drift-0.5*(volatility**2))*t + volatility*br
+    print("Ref Price array:")
+    print(price)
     return price
