@@ -11,7 +11,7 @@ class Agent:
         self.emax = emax
         self.profit = [0]
         self.inventory = [0]
-        self.trades = []
+        self.trades = [] #record of trade with volume at each timestep 
         return
 
     def settle(self,sellOrder, bid, buyWinner, buyOrder, ask, sellWinner):
@@ -20,15 +20,15 @@ class Agent:
             self.inventory.append(self.inventory[-1] + buyOrder)
             self.profit.append(self.profit[-1] - buyOrder*buyWinner)
 
-            self.trades.append(["Buy", buyOrder])#record trade
+            self.trades.append(buyOrder)#record trade
         elif self._id == sellWinner:
             #print('yup')
             self.inventory.append(self.inventory[-1] - sellOrder)
             self.profit.append(self.profit[-1] + buyOrder*buyWinner)
-            self.trades.append(["Sell", buyOrder]) #record trade
+            self.trades.append(-1*buyOrder) #record trade
         else:
             self.profit.append(self.profit[-1])
-            self.trades.append(["None", 0]) #record trade
+            self.trades.append(0) #record trade
 
     def quote(self, price, buyOrder, sellOrder):
         """

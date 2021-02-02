@@ -38,7 +38,9 @@ def profitCalculation(agents, bid, ask, spread, price, buyOrders, sellOrders,age
             agents[j].settle(sellOrders[i], bid[buyWinner], buyWinner, buyOrders[i], ask[sellWinner], sellWinner)
 
 
+
 def simulation():
+
     step = 0.25
     time= 1000
     drift = 0.025
@@ -61,10 +63,11 @@ def simulation():
     profitCalculation(agents, bid, ask, spread, price, buyOrders, sellOrders, agent_num)
 
     #plotting
-    plt.figure(figsize=(18, 10))
+    plt.figure(0, figsize=(18, 10))
+
 
     #plot ref price
-    plt.subplot(131)
+    plt.subplot(121)
     plt.plot(price)
     plt.grid(True)    
     plt.xlabel('Timestep')
@@ -72,24 +75,27 @@ def simulation():
     plt.title('Reference Price')
 
     #plot competitor agent performance
-    plt.subplot(132)
+    plt.subplot(122)
     for agent in agents:
-        print(agent._id, agent.trades)
+       # print(agent._id, agent.trades)
         plt.plot(agent.profit)  #plot the agents
         plt.legend([0,1,2,3,4])
     plt.ylabel('Profit ($)')
     plt.xlabel('Timestep')
     plt.title('Agent Profit')
     plt.grid(True)
-
-    #plot big/ask
-    plt.subplot(132)
-    plt.plot(bid)
-    plt.plot(ask)
-    plt.suptitle('Market Maker Agent Simulation Results')
-
+    
+#plot agent trades over time    
+    for i in range (len(agents)):
+        plt.figure(i+1)
+        plt.plot(agents[i].trades)
+        plt.ylabel('Volume')
+        plt.xlabel('Timestep')
+        plt.title('Agent '+ str(agents[i]._id) + ' trade activity')
+        plt.grid(True)
     plt.show()
 
+    
     return agents
 
 simulation()
