@@ -12,3 +12,4 @@ def gmbrownian(step, time, drift, volatility, initValue):
     print("Ref Price array:")
     print(price)
     return price
+    

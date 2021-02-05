@@ -54,21 +54,19 @@ plot the profit of each agent. This profit does not include their assets (i.e. i
 next.
 
 ## Issues
-* plot inventory value and add invenotry to QL-agent. 
-
 * get Q-Learning agent working and look for possible 3rd party libraries to help
 
 
 ## Tasks (not started)
 * create GUI
 * Generalize our agent so that it can use any RL algorithm (Q-learning, etc.)
-* Implement Q-learning libraries for our agent instead of using matrices
+* make trader demand function more realistic 
 
 ## Tasks (started)
-* Track inventory and transactions
-* Visualize inventory and trades over time, plot 
-* Create more detailed simulation diagram
+* Track inventory
 
 ## tasks (done)
 * plot ref price
 * track trades
+* Visualize trades over time, plot 
+* Create more detailed simulation diagram

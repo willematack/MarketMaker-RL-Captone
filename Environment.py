@@ -1,24 +1,54 @@
-import gym
-from gym import spaces
+import numpy as np
+import random
+from traders import traderDemand
 
-class Env(gym.Env):
-  """Custom Environment that follows gym interface"""
-  metadata = {'render.modes': ['human']}
+from brownian import gmbrownian
 
-  def __init__(self, arg1, arg2, ...):
-    super(Env, self).__init__()
-    # Define action and observation space
-    # They must be gym.spaces objects
-    # Example when using discrete actions:
-    self.action_space = spaces.Box(low=0, high=2, shape=(1,2), dType=np.float16)
-    # Example for using image as input:
-    self.observation_space = spaces.Box(low=-100, high=100, shape=(1,1), dtype=np.uint8)
 
-  def step(self, action):
-    # Execute one time step within the environment
-    ...
-  def reset(self):
-    # Reset the state of the environment to an initial state
-    ...
-  def render(self, mode='human', close=False):
-    # Render the environment to the screen
+class Environment:
+    def __init__(self,refPriceConfig):
+        #init environment
+        print("Create Environment")
+        self.states = []
+        self.refPriceConfig = refPriceConfig
+
+        #init ref prices over time (ref price is independent of all agent actions and environment state.)
+        self.refPrices = gmbrownian(
+            refPriceConfig["step"], 
+            refPriceConfig["time"],
+            refPriceConfig["drift"],
+            refPriceConfig["volatility"],
+            refPriceConfig["initValue"]
+        )
+        #init demand over time (currently simplified to random normally distributed demand)
+        self.demand = traderDemand(refPriceConfig["time"]/refPriceConfig["step"])
+        self.t = 0 #starting timestep
+
+        return
+
+    def getConfig(self):
+        return self.refPriceConfig
+    def getRefPrices(self):
+        return self.refPrices
+    def getCurrentRefPrice(self):
+        if (self.t < len(self.refPrices)-1 ):
+            return self.refPrices[self.t]
+        return self.refPrices[-1]    
+    def getDemand(self):
+        #format: demand{"buy": [...],"sell": [...]}
+        return self.demand
+    def getCurrentTimeStep(self):
+        return self.t
+    def updateCurrentTimeStep(self):
+        self.t = self.t+1
+        return self.t
+    def updateState(self, newstate):
+        self.states.append(newstate)
+
+
+    def getStates(self):
+        return self.states
+    def getCurrentState(self):
+        if not self.states:
+            return []
+        return self.states[-1]
