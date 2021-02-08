@@ -1,5 +1,19 @@
 # Capstone
 
+## Running simulation
+Ensure that you have git and Python3 installed. Clone the git repo, enter the directory and switch to 'joshDev' branch.
+    
+    git clone https://github.com/spencerkelly143/capstone.git
+    cd captone 
+    git checkout joshDev
+    git pull
+
+To run the simulation, run the simulation.py file.
+
+    python3 simulation.py
+
+If executed correctly, the program should create the simulation environment and produce graphs with the ref price and agent profits over time. The simulation can be configured in the simulation.py file.
+
 ## demand.py
 Generates the market buy and sell orders. These are randomly generated and are normalized to be around
 100. Returns an array of size *Size*.
@@ -20,10 +34,8 @@ and drift. You can also specify the time and step values. The total number of it
 is calculated time divided by step. For example, if you wanted prices every hour for 5 days,
 you could do *time = 5 x 24* and *step = 1*.
 
-## Environment.py
-Don't worry about this file. I was trying to implement Q-learning using a method
-I found in a textbook but it doesn't seem to provide the level of detail we want.
-Might come back to it at some point later in the project.
+## environment.py
+Currently set up as main market environment for the simulation. Made a few changes from the master branchand will continue to work with this file for Q-learning
 
 ## QLAgent.py
 This file contains our learning agent. This is my attempt at designing a Q-table and
@@ -33,7 +45,12 @@ a more efficient way to do this than using numpy matrices.
 
 A lot of the functions are similar to the agent.py file. 
 
-## main.py
+
+## simulation.py
+This is the new main file where the simulation is executed. Running this file executes initializes the environment.py, generates GBM ref prices based on confguration, creates agents, and runs the market simulation. At this time, it is almost identical in functionality to the old main.py file.
+
+
+## main.py (deprecated)
 This is where the simulation is executed. Running this file executes *simulation()*.
 At the top of this function are the important values to manipulate:
 * step
@@ -53,8 +70,11 @@ prices. It then uses settle to reward the agents who outbid their opponents. Onc
 plot the profit of each agent. This profit does not include their assets (i.e. inventory). We can add this
 next.
 
+
+
 ## Issues
-* get Q-Learning agent working and look for possible 3rd party libraries to help
+* get Q-Learning agent working in simple terms
+
 
 
 ## Tasks (not started)

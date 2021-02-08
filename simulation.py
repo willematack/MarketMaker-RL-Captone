@@ -2,12 +2,13 @@ import numpy as np
 
 from environment import Environment
 from agent import Agent
+import matplotlib.pyplot as plt
 
 
 #simulation configuration
 
 step = 0.25
-time = 1000
+time = 100
 steps = time/step
 numCompetitors = 5 
 refPriceConfig = {
@@ -41,6 +42,7 @@ while(not done):
         bid[i], ask[i] = agents[i].quote(price, buyOrder, sellOrder)
     sellWinner = ask.argmin()
     buyWinner = ask.argmax()
+    #profit calculations
     for i in range(numCompetitors):
             agents[i].settle(sellOrder, bid[buyWinner], buyWinner, buyOrder, ask[sellWinner], sellWinner)
 
@@ -53,5 +55,38 @@ while(not done):
 
 #plot results
 
-print(env.getCurrentState())
 
+#print(env.getCurrentState())
+
+plt.figure(0, figsize=(18, 10))
+
+
+    #plot ref price
+plt.subplot(121)
+plt.plot(env.refPrices)
+plt.grid(True)    
+plt.xlabel('Timestep')
+plt.ylabel('Reference Price ($)')
+plt.title('Reference Price')
+
+    #plot competitor agent performance
+plt.subplot(122)
+for agent in agents:
+    #print(agent._id, agent.trades)
+    plt.plot(agent.profit)  #plot the agents
+    plt.legend([0,1,2,3,4])
+plt.ylabel('Profit ($)')
+plt.xlabel('Timestep')
+plt.title('Agent Profit')
+plt.grid(True)
+
+#plot agent trades over time    
+for i in range (len(agents)):
+    plt.figure(i+1)
+    plt.plot(agents[i].trades)
+    plt.ylabel('Volume')
+    plt.xlabel('Timestep')
+    plt.title('Agent '+ str(agents[i]._id) + ' trade activity')
+    plt.grid(True)
+    
+plt.show()
