@@ -176,7 +176,8 @@ class AgentQ():
 
         #calc temporal difference   
         TD = reward + gamma*actionValue + self.actions[-1][1] #reward + discount factor times greatest new q value + q value chosen
-        print("TD: ",TD)
+        #normalize TD to [0,1] assume min,max of [-200,200]
+        TD = (TD+200)/400
         Qnew = self.actions[-1][1] + alpha*TD
 
         #todo: update Q-table based on reward
