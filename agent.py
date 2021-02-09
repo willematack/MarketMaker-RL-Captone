@@ -18,11 +18,11 @@ class Agent:
         #print(self._id)
         if self._id == buyWinner:
             self.inventory.append(self.inventory[-1] + buyOrder)
-            self.profit.append(self.profit[-1] - buyOrder*buyWinner)
+            self.profit.append(self.profit[-1] - buyOrder*bid)
             self.trades.append(buyOrder)#record trade
         if self._id == sellWinner:
             self.inventory.append(self.inventory[-1] - sellOrder)
-            self.profit.append(self.profit[-1] + sellOrder*buyWinner)
+            self.profit.append(self.profit[-1] + sellOrder*ask)
             self.trades.append(-1*sellOrder ) #record trade (negative means a sell)
         if(self._id != sellWinner and self._id != buyWinner):
             self.profit.append(self.profit[-1])

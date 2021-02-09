@@ -85,7 +85,7 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
 * test settle() method for agents and Qagent. I think it might be allowing multiplt buy/sell winners at the same time. I also think it was preventing the same agent from being a buyer and seller before
 * A mix of python dicts and small arrays are used throughout the project to pass multiple values, this should be standardized to just one or the other
 * might need to do more actions at once
-
+* type 1 agents have keep losing profit for some reason
 
 ## Tasks (not started)
 * create GUI
