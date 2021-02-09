@@ -42,7 +42,7 @@ def profitCalculation(agents, bid, ask, spread, price, buyOrders, sellOrders,age
 def simulation():
 
     step = 0.25
-    time= 1000
+    time= 100
     drift = 0.025
     volatility = 0.1
     initValue = 20

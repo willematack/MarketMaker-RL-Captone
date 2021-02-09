@@ -151,21 +151,29 @@ class AgentQ():
         return self.spread[-1][0], self.spread[-1][1]
 
     def settle(self,sellOrder, bid, buyWinner, buyOrder, ask, sellWinner):
-        #todo: update Q-table based on reward
 
         if self._id == buyWinner:
             self.inventory.append(self.inventory[-1] + buyOrder)
             self.profit.append(self.profit[-1] - buyOrder*buyWinner)
             self.trades.append(buyOrder)#record trade
-        elif self._id == sellWinner:
+        if self._id == sellWinner:
             self.inventory.append(self.inventory[-1] - sellOrder)
             self.profit.append(self.profit[-1] + sellOrder*buyWinner)
             self.trades.append(-1*sellOrder ) #record trade (negative means a sell)
-        else:
+        if(self._id != sellWinner and self._id != buyWinner):
             self.profit.append(self.profit[-1])
             self.trades.append(0) #record trade
+
+        #todo: update Q-table based on reward
+        #calc temporal difference   
+        gamma = self.qLearningConfig["gamma"]
+
+
         if(self.trades[-1] != 0):
             print("-QLearning Trade")
             print(self.trades[-1])
+
     def getQtable(self):
         return self.qTable
+
+    def updateQTable(self):

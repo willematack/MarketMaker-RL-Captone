@@ -73,8 +73,7 @@ while(not done):
     }
     bid[-1], ask[-1] = Qagent.quote(price,competitorSpread)
     
-    #todo: do profit calc for learner
-
+    #profit calc for learner
     sellWinner = ask.argmin()
     buyWinner = bid.argmax()
     #profit calculations for each agent
@@ -95,7 +94,7 @@ while(not done):
 def plotResults():
     plt.figure(0, figsize=(18, 10))
     
-    #plot ref price ove time
+    #plot ref price over time
     plt.subplot(121)
     plt.plot(env.refPrices)
     plt.grid(True)    
@@ -112,7 +111,7 @@ def plotResults():
     plt.plot(Qagent.profit)
     plt.ylabel('Profit ($)')
     plt.xlabel('Timestep')
-    plt.title('Agent Profit')
+    plt.title('Agent Profit over time')
     plt.grid(True)
 
     #plot agent trades over time    
@@ -123,6 +122,7 @@ def plotResults():
         plt.xlabel('Timestep')
         plt.title('Agent '+ str(agents[i]._id) + ' trade activity')
         plt.grid(True)
+    #plot Qlearner
     plt.figure(7)
     plt.plot(Qagent.trades)
     plt.ylabel('Volume')
