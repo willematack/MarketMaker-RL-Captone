@@ -82,7 +82,7 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
 ## Issues
 * get Q-Learning agent working in simple terms
 * simulation assumes all market makers can buy/sell as much as the market demands
-
+* test settle() method for agents and Qagent. I think it might be allowing multiplt buy/sell winners at the same time. I also think it was preventing the same agent from being a buyer and seller before
 
 ## Tasks (not started)
 * create GUI
@@ -92,7 +92,6 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
 ## Tasks (started)
 * get Qlearning agent working
     * update Q table with bellman
-    * graph results
     * setup simulation to have many training episodes
 
 ## tasks (done)
