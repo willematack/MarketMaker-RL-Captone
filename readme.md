@@ -83,6 +83,8 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
 * get Q-Learning agent working in simple terms
 * simulation assumes all market makers can buy/sell as much as the market demands
 * test settle() method for agents and Qagent. I think it might be allowing multiplt buy/sell winners at the same time. I also think it was preventing the same agent from being a buyer and seller before
+* A mix of python dicts and small arrays are used throughout the project to pass multiple values, this should be standardized to just one or the other
+
 
 ## Tasks (not started)
 * create GUI

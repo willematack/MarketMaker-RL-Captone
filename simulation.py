@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 #simulation configuration
 
 step = 0.25
-time = 100
+time = 500
 steps = time/step
 numCompetitors = 5 
 refPriceConfig = {
@@ -106,9 +106,8 @@ def plotResults():
     plt.subplot(122)
     for agent in agents:
         plt.plot(agent.profit)  #plot the agents
-        plt.legend(["0","1","2","3","4","Q"])
-
     plt.plot(Qagent.profit)
+    plt.legend(["0","1","2","3","4","Q"])
     plt.ylabel('Profit ($)')
     plt.xlabel('Timestep')
     plt.title('Agent Profit over time')
@@ -123,7 +122,7 @@ def plotResults():
         plt.title('Agent '+ str(agents[i]._id) + ' trade activity')
         plt.grid(True)
     #plot Qlearner
-    plt.figure(7)
+    plt.figure(numCompetitors+1)
     plt.plot(Qagent.trades)
     plt.ylabel('Volume')
     plt.xlabel('Timestep')

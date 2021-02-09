@@ -9,7 +9,6 @@ class AgentQ():
     #states q = QLearner, c = competitor 
     # [(qbid-cbid)/refprice][(qask-cask)/refprice][inventory]
 
-    actions = ["increaseAsk", "decreaseAsk","increaseBid","decreaseBid", "null"]
     def __init__(self, configuration, initialQTable,numCompetitors):
        #config Q-learning params
         self._id = numCompetitors
@@ -19,7 +18,7 @@ class AgentQ():
         self.inventory = [0]
         self.trades = [] #record of trade with volume at each timestep 
         self.states = [] # OBSERVED States indexes (inventory,bidratio,askratio)
-        self.actions = [] #keep track of agent behavior
+        self.actions = [] #keep track of each action taken and the q value for that action
         self.rewards = [] #rewards array
         self.qTable = initialQTable #the agent will be re-created each episode, but the final qtable at the end of each episode should persist
         return
@@ -86,7 +85,6 @@ class AgentQ():
         print("inventory: " + str(inventory) +", bidRatio: " + str(bidRatio) + ", askRatio: " + str(askRatio) )
         print("-state index:")
         print(stateIndex)
-        self.states.append(stateIndex)
         return stateIndex
     def pickAction(self,stateIndex):
         '''
@@ -110,13 +108,13 @@ class AgentQ():
         #print(qOptions)
         
         actionIndex = qOptions.argmax()
-
         #explore or exploit
         if(self.qLearningConfig["epsilon"] < random.random()):
             print("-Exploring random action.")
             actionIndex = random.randrange(4)
-        self.actions.append(actionIndex)
-        return actionIndex
+        actionValue = qOptions[actionIndex]
+        self.actions.append([actionIndex,actionValue])
+        return actionIndex, actionValue
 
 
     def quote(self, price, competitorSpread):
@@ -132,26 +130,28 @@ class AgentQ():
         inventory = self.inventory[-1]
 
         stateIndex = self.selectStateIndex(inventory,bidRatio,askRatio)
-        action = self.pickAction(stateIndex)
-        print("Action chosen: " + str(action))
+        #update state
+        self.states.append(stateIndex)
+        actionIndex, actionValue = self.pickAction(stateIndex)
+        print("Action chosen: " + str(actionIndex) + " : " + str(actionValue))
             
         #move bid/ask based on state and Q
         nudgeConstant = self.qLearningConfig["nudge"]
-        if(action ==0):
+        if(actionIndex ==0):
             oldBid = oldBid + nudgeConstant
-        elif(action==1):
+        elif(actionIndex==1):
             oldBid = oldBid - nudgeConstant
-        elif(action==2):
+        elif(actionIndex==2):
             oldAsk = oldAsk + nudgeConstant
-        elif(action==3):
+        elif(actionIndex==3):
             oldAsk = oldAsk - nudgeConstant
         #if action is 4 ("do nothing") then spread is unchanged
         self.spread.append([oldBid,oldAsk])
+        #update new state in settle()
 
         return self.spread[-1][0], self.spread[-1][1]
 
     def settle(self,sellOrder, bid, buyWinner, buyOrder, ask, sellWinner):
-
         if self._id == buyWinner:
             self.inventory.append(self.inventory[-1] + buyOrder)
             self.profit.append(self.profit[-1] - buyOrder*buyWinner)
@@ -164,16 +164,32 @@ class AgentQ():
             self.profit.append(self.profit[-1])
             self.trades.append(0) #record trade
 
-        #todo: update Q-table based on reward
+        #Find new (current) state
+        stateIndex = self.selectStateIndex(self.inventory[-1],self.spread[-1][0],self.spread[-1][1])
+        actionIndex, actionValue = self.pickAction(stateIndex)
+
+        gamma = self.qLearningConfig["gamma"] #discount factor
+        alpha = self.qLearningConfig["alpha"] #learning rate
+        
+        reward = self.profit[-1]
+        #should this be normalized?
+        #are we looking for only the profit from the last step?
+
         #calc temporal difference   
-        gamma = self.qLearningConfig["gamma"]
+        TD = reward + gamma*actionValue + self.actions[-1][1] #reward + discount factor times greatest new q value + q value chosen
+        
+        Qnew = self.actions[-1][1] + alpha*TD
 
-
+        #todo: update Q-table based on reward
+                
         if(self.trades[-1] != 0):
             print("-QLearning Trade")
             print(self.trades[-1])
-
-    def getQtable(self):
-        return self.qTable
-
-    def updateQTable(self):
+  
+    def updateQTensor(self,index,newValue):
+        print("-Update Q table")
+        print("old q value")
+        print(self.qTable[index[0]][index[1]][index[2]])
+        self.qTable[index[0]][index[1]][index[2]] = newValue
+        print(self.qTable[index[0]][index[1]][index[2]])
+        print("new q value")
