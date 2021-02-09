@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 #simulation configuration
 
 step = 0.25
-time = 500
+time = 200
 steps = time/step
 numCompetitors = 5 
 refPriceConfig = {
@@ -22,7 +22,7 @@ refPriceConfig = {
 
 #Qlearner configuration
 qConfig = {
-    "epsilon": 0.7,
+    "epsilon": 0.8,
     "gamma": 0.4,
     "alpha": 0.2,
     "nudge": 0.5 # nudge constant in $ for moving bid/ask spread

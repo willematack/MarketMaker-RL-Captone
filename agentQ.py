@@ -81,10 +81,10 @@ class AgentQ():
             askIndex=9
         stateIndex = [inventoryIndex, bidIndex, askIndex]    
 
-        print("-state:")
-        print("inventory: " + str(inventory) +", bidRatio: " + str(bidRatio) + ", askRatio: " + str(askRatio) )
-        print("-state index:")
-        print(stateIndex)
+        # print("-state:")
+        # print("inventory: " + str(inventory) +", bid: " + str(bidRatio) + ", askRatio: " + str(askRatio) )
+        # print("-state index:")
+        # print(stateIndex)
         return stateIndex
     def pickAction(self,stateIndex):
         '''
@@ -130,7 +130,7 @@ class AgentQ():
         inventory = self.inventory[-1]
 
         stateIndex = self.selectStateIndex(inventory,bidRatio,askRatio)
-        #update state
+        #update with current (pretrade) state
         self.states.append(stateIndex)
         actionIndex, actionValue = self.pickAction(stateIndex)
         print("Action chosen: " + str(actionIndex) + " : " + str(actionValue))
@@ -164,32 +164,34 @@ class AgentQ():
             self.profit.append(self.profit[-1])
             self.trades.append(0) #record trade
 
-        #Find new (current) state
+        #Find new (post trade) state
         stateIndex = self.selectStateIndex(self.inventory[-1],self.spread[-1][0],self.spread[-1][1])
         actionIndex, actionValue = self.pickAction(stateIndex)
 
         gamma = self.qLearningConfig["gamma"] #discount factor
         alpha = self.qLearningConfig["alpha"] #learning rate
         
-        reward = self.profit[-1]
+        reward = self.profit[-1]-self.profit[-2]#reward from last step
         #should this be normalized?
-        #are we looking for only the profit from the last step?
 
         #calc temporal difference   
         TD = reward + gamma*actionValue + self.actions[-1][1] #reward + discount factor times greatest new q value + q value chosen
-        
+        print("TD: ",TD)
         Qnew = self.actions[-1][1] + alpha*TD
 
         #todo: update Q-table based on reward
-                
+        updateIndex = self.states[-1]
+        updateIndex.append(self.actions[-1][0])
+        print(updateIndex)
+        self.updateQTensor(updateIndex,Qnew)
         if(self.trades[-1] != 0):
             print("-QLearning Trade")
             print(self.trades[-1])
   
     def updateQTensor(self,index,newValue):
-        print("-Update Q table")
-        print("old q value")
-        print(self.qTable[index[0]][index[1]][index[2]])
-        self.qTable[index[0]][index[1]][index[2]] = newValue
-        print(self.qTable[index[0]][index[1]][index[2]])
+        print("-Update Q table with: " + str(newValue))
+        print(self.qTable[index[0]][index[1]][index[2]][index[3]])
+        self.qTable[index[0]][index[1]][index[2]][index[3]] = newValue
         print("new q value")
+        print(self.qTable[index[0]][index[1]][index[2]][index[3]])
+      
