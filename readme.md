@@ -37,44 +37,51 @@ you could do *time = 5 x 24* and *step = 1*.
 ## environment.py
 Currently set up as main market environment for the simulation. Made a few changes from the master branchand will continue to work with this file for Q-learning
 
-## QLAgent.py
-This file contains our learning agent. This is my attempt at designing a Q-table and
-the state and action space are not as specified yet. We need to do a little more research
-to see if there are any libraries that help with Q-tables. I feel like their is probably
-a more efficient way to do this than using numpy matrices.
-
-A lot of the functions are similar to the agent.py file. 
-
 
 ## simulation.py
 This is the new main file where the simulation is executed. Running this file executes initializes the environment.py, generates GBM ref prices based on confguration, creates agents, and runs the market simulation. At this time, it is almost identical in functionality to the old main.py file.
 
 
-## main.py (deprecated)
-This is where the simulation is executed. Running this file executes *simulation()*.
-At the top of this function are the important values to manipulate:
-* step
-* time
-* Drift
-* volatility
-* initValue
-* agent_num
-
-We call the previous functions to get our prices and demand and then call *makeAgents*
-to initialize the competitors. I have commented out three lines after that which
-are involved with the Q-learning agent because I am currently focused on the environment.
-The competition happens in *profitCalculation()*. 
-
-In this function, we iterate over all the time steps and find who has the most competitive bid and ask
-prices. It then uses settle to reward the agents who outbid their opponents. Once this is finished, we
-plot the profit of each agent. This profit does not include their assets (i.e. inventory). We can add this
-next.
+## agentQ.py
+todo: write documentation for q learner
 
 
+## Q-Matrix format
+The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indices are the state of the QLearner/market. They are binned based on the ranges shown below to increase computational efficiency. The 4th index represents the action space. 
+
+    inventory(4): {0-50,50-100,100-150,>150}
+    bid ratio(10): {<-0.2, 
+                -0.2:-0.15, 
+                -0.15:-0.1,
+                -0.1:-0.05,
+                -0.05:0,
+                0:0.05,
+                0.05:0.1,
+                0.1:0.15,
+                0.15:0.2,
+                >0.2,
+                }
+    ask ratio(10): {<-0.2, 
+                -0.2:-0.15, 
+                -0.15:-0.1,
+                -0.1:-0.05,
+                -0.05:0,
+                0:0.05,
+                0.05:0.1,
+                0.1:0.15,
+                0.15:0.2,
+                >0.2,
+                }
+    actions(5):{
+        "increaseBid",
+        "decreaseBid", 
+        "increaseAsk", 
+        "decreaseAsk",
+        "do nothing"}
 
 ## Issues
 * get Q-Learning agent working in simple terms
-
+* simulation assumes all market makers can buy/sell as much as the market demands
 
 
 ## Tasks (not started)
@@ -83,7 +90,10 @@ next.
 * make trader demand function more realistic 
 
 ## Tasks (started)
-* Track inventory
+* get Qlearning agent working
+    * update Q table with bellman
+    * graph results
+    * setup simulation to have many training episodes
 
 ## tasks (done)
 * plot ref price
