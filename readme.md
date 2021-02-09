@@ -10,7 +10,7 @@ Ensure that you have git and Python3 installed. Clone the git repo, enter the di
 
 To run the simulation, run the simulation.py file.
 
-    python3 simulation.py
+    python simulation.py
 
 If executed correctly, the program should create the simulation environment and produce graphs with the ref price and agent profits over time. The simulation can be configured in the simulation.py file.
 
@@ -84,6 +84,7 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
 * simulation assumes all market makers can buy/sell as much as the market demands
 * test settle() method for agents and Qagent. I think it might be allowing multiplt buy/sell winners at the same time. I also think it was preventing the same agent from being a buyer and seller before
 * A mix of python dicts and small arrays are used throughout the project to pass multiple values, this should be standardized to just one or the other
+* might need to do more actions at once
 
 
 ## Tasks (not started)
@@ -92,12 +93,13 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
 * make trader demand function more realistic 
 
 ## Tasks (started)
-* get Qlearning agent working
-    * update Q table with bellman
+* get Qlearning agent working more consistently
     * setup simulation to have many training episodes
-
+    * setup testing for all methods
+    * formalize all math and make sure its good
 ## tasks (done)
 * plot ref price
 * track trades
 * Visualize trades over time, plot 
 * Create more detailed simulation diagram
+* update Q table with bellman
