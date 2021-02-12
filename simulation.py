@@ -39,7 +39,7 @@ env.updateState({
         })
 
 #create and shape random Q tensor [inventory][bid][ask][actions]
-qTable = np.random.rand(2000)
+qTable = np.random.rand(2000) #array of random floats between 0-1
 qTable = np.reshape(qTable, (4,10,10,5))
 
 #create Q learning agent

@@ -86,6 +86,11 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
 * A mix of python dicts and small arrays are used throughout the project to pass multiple values, this should be standardized to just one or the other
 * might need to do more actions at once
 * type 1 agents have keep losing profit for some reason
+* add functionality for negative inventory
+* add functionality for more than one margin increase/decrease at once ()
+* check bid/ask ratio calculations and make sure it's good. (I think it's ignoring if we have the best price)
+* might not need negative bid/ask ratios since we can just pick our own values as the tightest (but maybe we do since we want to have a wider margin to make more profit)
+* probably need to normalize action vector when Q value is updated by bellman equation. 
 
 ## Tasks (not started)
 * create GUI
