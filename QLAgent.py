@@ -2,8 +2,8 @@ import numpy as np
 from decimal import Decimal
 import random
 
-class QLAgent():
-    def __init__(self):
+class QLAgent:
+    def __init__(self, emax):
         """
         epsilon:    This is the value that determines exploration vs exploitation.
                     We will see this being used in self.quote()
@@ -23,12 +23,13 @@ class QLAgent():
         self.gamma = 0.4
         self.alpha = 0.2
         self.profit = [0]
-        amounts = np.linspace(0,1,100)
-        bids = np.array([round(x,2) for x in amounts])
-        asks = np.array([round(x,2) for x in amounts])
+        amounts = np.linspace(0,emax,10)
+        bids = np.array([round(x,3) for x in amounts])
+        asks = np.array([round(x,3) for x in amounts])
         self.action_space = np.array([[i,j] for i in bids for j in asks])
         #demands = np.linspace(-100, 100, 2000)
-        self.state_space = np.linspace(-200, 200, 401)
+        inventory = np.linspace(0, 1000, 11)
+        self.state_space = np.array([[i,j,k] for i in bids for j in asks for k in inventory])
         #self.states = np.array([[i,j,k] for i in demands for j in demands for k in volume])
 
         self.Q = np.zeros((self.state_space.size,self.action_space.size))

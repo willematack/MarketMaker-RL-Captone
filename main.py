@@ -36,6 +36,7 @@ def profitCalculation(agents, bid, ask, spread, price, buyOrders, sellOrders,age
         buyWinner = bid.argmax()
         for j in range(agent_num):
             agents[j].settle(sellOrders[i], bid[buyWinner], buyWinner, buyOrders[i], ask[sellWinner], sellWinner)
+        print('\n')
 
 
 def simulation():
@@ -60,8 +61,16 @@ def simulation():
 
     profitCalculation(agents, bid, ask, spread, price, buyOrders, sellOrders, agent_num)
 
+
     for agent in agents:
+        print(agent._id)
+        print(agent.profit[-1])
+        print(agent.inventory[-1])
         plt.plot(agent.profit)  #plot the agents
+        plt.legend([0,1,2,3,4])
+    plt.show()
+    for agent in agents:
+        plt.plot(agent.inventory)  #plot the agents
         plt.legend([0,1,2,3,4])
     plt.show()
     return agents

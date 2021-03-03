@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from math import sqrt
 
 def gmbrownian(step, time, drift, volatility, initValue):
-    iter = int(time/step)
+    iter = int(time/step)+1
     price = np.zeros(iter)
     dist=np.random.standard_normal(size=iter)
     t = np.linspace(0, time, iter)

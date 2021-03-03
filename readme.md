@@ -1,6 +1,6 @@
-#Capstone
+# Capstone
 
-##demand.py
+## demand.py
 Generates the market buy and sell orders. These are randomly generated and are normalized to be around
 100. Returns an array of size *Size*.
 
@@ -31,7 +31,7 @@ the state and action space are not as specified yet. We need to do a little more
 to see if there are any libraries that help with Q-tables. I feel like their is probably
 a more efficient way to do this than using numpy matrices. /
 
-A lot of the functions are similar to the agent.py file. 
+A lot of the functions are similar to the agent.py file.
 
 ##main.py
 This is where the simulation is executed. Running this file executes *simulation()*.

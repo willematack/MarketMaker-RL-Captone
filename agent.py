@@ -14,14 +14,17 @@ class Agent:
         return
 
     def settle(self,sellOrder, bid, buyWinner, buyOrder, ask, sellWinner):
-        print(self._id)
+        # print('sell: ' + str(sellOrder*ask))
+        # print('buy: ' + str(buyOrder*bid))
+        # print('\n')
         if self._id == buyWinner:
+            print('bid: ' + str(bid))
             self.inventory.append(self.inventory[-1] + buyOrder)
-            self.profit.append(self.profit[-1] - buyOrder*buyWinner)
+            self.profit.append(self.profit[-1] - buyOrder*bid)
         elif self._id == sellWinner:
-            print('yup')
+            print('ask: ' + str(ask))
             self.inventory.append(self.inventory[-1] - sellOrder)
-            self.profit.append(self.profit[-1] + buyOrder*buyWinner)
+            self.profit.append(self.profit[-1] + sellOrder*ask)
         else:
             self.profit.append(self.profit[-1])
 
