@@ -123,7 +123,7 @@ class AgentQ():
             self.spread.append([(price-price*delta), (price+price*delta)])
         #bid/ask = last times bid ask
         oldBid = self.spread[-1][0]
-        oldAsk = self.spread[-1][1]
+        oldAsk = self.spread[-1][1] 
         
         bidRatio = (competitorSpread["bid"]-oldBid)/price
         askRatio = (competitorSpread["ask"]-oldAsk)/price
@@ -133,6 +133,7 @@ class AgentQ():
         #update with current (pretrade) state
         self.states.append(stateIndex)
         actionIndex, actionValue = self.pickAction(stateIndex)
+        print("State: " + str(stateIndex) )
         print("Action chosen: " + str(actionIndex) + " : " + str(actionValue))
             
         #move bid/ask based on state and Q
@@ -152,13 +153,17 @@ class AgentQ():
         return self.spread[-1][0], self.spread[-1][1]
 
     def settle(self,sellOrder, bid, buyWinner, buyOrder, ask, sellWinner):
-        if self._id == buyWinner:
+        if self._id == buyWinner and self._id == sellWinner:
+            self.inventory.append(self.inventory[-1] + buyOrder - sellOrder)
+            self.profit.append(self.profit[-1] - buyOrder*buyWinner + sellOrder*sellWinner)
+            self.trades.append(buyOrder - sellOrder)#record trade
+        elif self._id == buyWinner:
             self.inventory.append(self.inventory[-1] + buyOrder)
             self.profit.append(self.profit[-1] - buyOrder*buyWinner)
             self.trades.append(buyOrder)#record trade
-        if self._id == sellWinner:
+        elif self._id == sellWinner:
             self.inventory.append(self.inventory[-1] - sellOrder)
-            self.profit.append(self.profit[-1] + sellOrder*buyWinner)
+            self.profit.append(self.profit[-1] + sellOrder*sellWinner)
             self.trades.append(-1*sellOrder ) #record trade (negative means a sell)
         if(self._id != sellWinner and self._id != buyWinner):
             self.profit.append(self.profit[-1])
@@ -183,19 +188,14 @@ class AgentQ():
         
         Qnew = self.actions[-1][1] + alpha*TD
 
-        #todo: update Q-table based on reward
         updateIndex = self.states[-1]
         updateIndex.append(self.actions[-1][0])
-        print(updateIndex)
+        #print(updateIndex)
         self.updateQTensor(updateIndex,Qnew)
-        if(self.trades[-1] != 0):
-            print("-QLearning Trade")
-            print(self.trades[-1])
+
   
     def updateQTensor(self,index,newValue):
-        print("-Update Q table with: " + str(newValue))
-        print(self.qTable[index[0]][index[1]][index[2]][index[3]])
         self.qTable[index[0]][index[1]][index[2]][index[3]] = newValue
-        print("new q value")
-        print(self.qTable[index[0]][index[1]][index[2]][index[3]])
+        #print("new q value")
+        #print(self.qTable[index[0]][index[1]][index[2]][index[3]])
       

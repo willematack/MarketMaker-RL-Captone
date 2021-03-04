@@ -80,17 +80,16 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
         "do nothing"}
 
 ## Issues
-* get Q-Learning agent working in simple terms
 * simulation assumes all market makers can buy/sell as much as the market demands
-* test settle() method for agents and Qagent. I think it might be allowing multiplt buy/sell winners at the same time. I also think it was preventing the same agent from being a buyer and seller before
 * A mix of python dicts and small arrays are used throughout the project to pass multiple values, this should be standardized to just one or the other
 * might need to do more actions at once
-* type 1 agents have keep losing profit for some reason
 * add functionality for negative inventory
 * add functionality for more than one margin increase/decrease at once ()
 * check bid/ask ratio calculations and make sure it's good. (I think it's ignoring if we have the best price)
 * might not need negative bid/ask ratios since we can just pick our own values as the tightest (but maybe we do since we want to have a wider margin to make more profit)
 * probably need to normalize action vector when Q value is updated by bellman equation. 
+
+
 
 ## Tasks (not started)
 * create GUI
@@ -108,3 +107,6 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
 * Visualize trades over time, plot 
 * Create more detailed simulation diagram
 * update Q table with bellman
+* Fix bug with q learner not being able to buy and sell at once
+* get Q-Learning agent working in simple terms
+

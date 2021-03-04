@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 #simulation configuration
 
 step = 0.25
-time = 200
+time = 1000
 steps = time/step
 numCompetitors = 5 
 refPriceConfig = {

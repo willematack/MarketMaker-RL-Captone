@@ -8,7 +8,9 @@ from brownian import gmbrownian
 class Environment:
     def __init__(self,refPriceConfig):
         #init environment
-        print("Create Environment")        
+        print("Create Environment")
+        print(refPriceConfig)        
+        
         self.states = []
         # tightest bid/ask from last timestep, current ref price, 
         self.refPriceConfig = refPriceConfig
