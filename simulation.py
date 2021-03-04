@@ -1,4 +1,5 @@
 import numpy as np
+import time as TIME
 
 from environment import Environment
 from agent import Agent
@@ -23,7 +24,7 @@ refPriceConfig = {
 #Qlearner configuration
 qConfig = {
     "epsilon": 0.8,
-    "gamma": 0.4,
+    "gamma": 0.4, #discount factor
     "alpha": 0.2,
     "nudge": emax/(numCompetitors+1 ) # nudge constant in $ for moving bid/ask spread
                 #Proven by Willem to be optimal when equal to emax/(numcompetitors+1)
@@ -50,6 +51,8 @@ Qagent = AgentQ(qConfig,qTable,numCompetitors)
 agents = [Agent(emax) for i in range(numCompetitors)]
 
 #Run Simulation
+start_time = TIME.time()
+
 done = False
 while(not done):
     #get current state variables
@@ -91,6 +94,9 @@ while(not done):
     #finish once simulation time is reached
     if(currentTimeStep > steps -1):
         done = True
+        print("Simulation Complete")
+        print("Execution Time: - %s seconds -" % (TIME.time() - start_time))
+
 
 #plot results
 def plotResults():
@@ -130,7 +136,18 @@ def plotResults():
     plt.xlabel('Timestep')
     plt.title('QL Agent trade activity')
     plt.grid(True)
+
+    #plot Qlearner learning curve
+    plt.figure(numCompetitors+2)
+    plt.plot(Qagent.learningCurve)
+    plt.ylabel('Learned amount')
+    plt.xlabel('Timestep')
+    plt.title('QL Agent Learning Curve')
+    plt.grid(True)
+
+
     plt.show()
+
 
 
 plotResults()

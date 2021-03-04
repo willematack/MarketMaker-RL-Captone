@@ -21,6 +21,7 @@ class AgentQ():
         self.actions = [] #keep track of each action taken and the q value for that action
         self.rewards = [] #rewards array
         self.qTable = initialQTable #the agent will be re-created each episode, but the final qtable at the end of each episode should persist
+        self.learningCurve = [0]#learned info at each timestep
         return
     def selectStateIndex(self,inventory,bidRatio,askRatio):
         '''
@@ -133,8 +134,10 @@ class AgentQ():
         #update with current (pretrade) state
         self.states.append(stateIndex)
         actionIndex, actionValue = self.pickAction(stateIndex)
-        print("State: " + str(stateIndex) )
-        print("Action chosen: " + str(actionIndex) + " : " + str(actionValue))
+        #print("State: " + str(stateIndex) )
+        #print("Old actions:")
+        #print(self.qTable[stateIndex[0]][stateIndex[1]][stateIndex[2]])
+        #print("Action chosen: " + str(actionIndex) + " : " + str(actionValue))
             
         #move bid/ask based on state and Q
         nudgeConstant = self.qLearningConfig["nudge"]
@@ -168,7 +171,7 @@ class AgentQ():
         if(self._id != sellWinner and self._id != buyWinner):
             self.profit.append(self.profit[-1])
             self.trades.append(0) #record trade
-        
+
         #Find new (post trade) state
         stateIndex = self.selectStateIndex(self.inventory[-1],self.spread[-1][0],self.spread[-1][1])
         actionIndex, actionValue = self.pickAction(stateIndex)
@@ -185,17 +188,19 @@ class AgentQ():
         #normalize TD to [0,1] assume min,max of [-200,200]
         #todo make this more sound
         TD = (TD+200)/400
-        
-        Qnew = self.actions[-1][1] + alpha*TD
 
+        Qold = self.actions[-1][1]
+        Qnew = self.actions[-1][1] + alpha*TD
+        
+        #formulate as utility function
+        #(new action vector - old action vector) * reward + gamme^timestep 
+        learned = (Qnew-Qold)*reward*(min(gamma*2,1))**len(self.learningCurve)/40
+    
+        self.learningCurve.append(learned + self.learningCurve[-1])
         updateIndex = self.states[-1]
         updateIndex.append(self.actions[-1][0])
-        #print(updateIndex)
         self.updateQTensor(updateIndex,Qnew)
-
-  
+        
     def updateQTensor(self,index,newValue):
         self.qTable[index[0]][index[1]][index[2]][index[3]] = newValue
-        #print("new q value")
-        #print(self.qTable[index[0]][index[1]][index[2]][index[3]])
-      
+        newActions = self.qTable[index[0]][index[1]][index[2]]

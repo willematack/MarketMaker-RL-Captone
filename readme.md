@@ -94,7 +94,7 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
 * check bid/ask ratio calculations and make sure it's good. (I think it's ignoring if we have the best price)
 * might not need negative bid/ask ratios since we can just pick our own values as the tightest (but maybe we do since we want to have a wider margin to make more profit)
 * probably need to normalize action vector when Q value is updated by bellman equation. 
-
+* agents might just be selling as much as possible without having inventory 
 
 
 ## Tasks (not started)
