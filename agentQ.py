@@ -168,7 +168,7 @@ class AgentQ():
         if(self._id != sellWinner and self._id != buyWinner):
             self.profit.append(self.profit[-1])
             self.trades.append(0) #record trade
-
+        
         #Find new (post trade) state
         stateIndex = self.selectStateIndex(self.inventory[-1],self.spread[-1][0],self.spread[-1][1])
         actionIndex, actionValue = self.pickAction(stateIndex)

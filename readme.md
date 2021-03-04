@@ -72,12 +72,18 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
                 0.15:0.2,
                 >0.2,
                 }
-    actions(5):{
+    actions(9):{
         "increaseBid",
         "decreaseBid", 
         "increaseAsk", 
         "decreaseAsk",
-        "do nothing"}
+                        # new actions
+        "increaseBid, increaseAsk"
+        "increaseBid, decreaseAsk"
+        "decreaseBid, increaseAsk"
+        "decreaseBid, decreaseAsk"
+        "do nothing"
+        }
 
 ## Issues
 * simulation assumes all market makers can buy/sell as much as the market demands

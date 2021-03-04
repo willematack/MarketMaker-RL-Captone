@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 
 
 #simulation configuration
-
 step = 0.25
 time = 1000
 steps = time/step
 numCompetitors = 5 
+emax = 0.05
 refPriceConfig = {
     "step": step,
     "time": time,
@@ -25,8 +25,10 @@ qConfig = {
     "epsilon": 0.8,
     "gamma": 0.4,
     "alpha": 0.2,
-    "nudge": 0.5 # nudge constant in $ for moving bid/ask spread
+    "nudge": emax/(numCompetitors+1 ) # nudge constant in $ for moving bid/ask spread
+                #Proven by Willem to be optimal when equal to emax/(numcompetitors+1)
 }
+
 #initial spread will be [refprice-(refprice*delta), refprice+(refprice*delta)]
 
 #create environment
@@ -45,7 +47,7 @@ qTable = np.reshape(qTable, (4,10,10,5))
 #create Q learning agent
 Qagent = AgentQ(qConfig,qTable,numCompetitors)
 #create competitor agents
-agents = [Agent(0.05) for i in range(numCompetitors)]
+agents = [Agent(emax) for i in range(numCompetitors)]
 
 #Run Simulation
 done = False
