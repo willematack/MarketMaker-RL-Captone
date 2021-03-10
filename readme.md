@@ -82,6 +82,7 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
         "increaseBid, decreaseAsk"
         "decreaseBid, increaseAsk"
         "decreaseBid, decreaseAsk"
+
         "do nothing"
         }
 
@@ -103,10 +104,13 @@ The q matrix is shaped as a 4 dimentional tensor (4,10,10,5). The first 3 indice
 * make trader demand function more realistic 
 
 ## Tasks (started)
+
 * get Qlearning agent working more consistently
     * setup simulation to have many training episodes
     * setup testing for all methods
     * formalize all math and make sure its good
+
+
 ## tasks (done)
 * plot ref price
 * track trades

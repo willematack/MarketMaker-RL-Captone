@@ -27,8 +27,6 @@ class Environment:
         self.t = 0 #starting timestep
 
         #todo, keep track of all trades in environment
-
-
         return
 
     def getConfig(self):

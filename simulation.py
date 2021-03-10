@@ -6,31 +6,33 @@ from agent import Agent
 from agentQ import AgentQ
 import matplotlib.pyplot as plt
 
-
 #simulation configuration
 step = 0.25
-time = 1000
+time = 100000
 steps = time/step
 numCompetitors = 5 
 emax = 0.05
 refPriceConfig = {
     "step": step,
     "time": time,
-    "drift": 0.025,
-    "volatility": 0.1,
+    "drift": 0.015,
+    "volatility": 0.2,
     "initValue": 20
 }
 
 #Qlearner configuration
 qConfig = {
-    "epsilon": 0.8,
+    "mu": 0.8, #exploration coefficient (%80 of time it is greedy) *change this
     "gamma": 0.4, #discount factor
-    "alpha": 0.2,
-    "nudge": emax/(numCompetitors+1 ) # nudge constant in $ for moving bid/ask spread
-                #Proven by Willem to be optimal when equal to emax/(numcompetitors+1)
-}
+    "alpha": 0.2, #learning rate
+    "nudge": 0.5 # nudge constant in $ for moving bid/ask spread
 
-#initial spread will be [refprice-(refprice*delta), refprice+(refprice*delta)]
+    #this is broken, need to change, need to nudge bid/ask epsilon
+    #   9 possible actions: nudging epsilon_ask and epsilon_bid
+    #   bid_price = refPrice * (1-epsilon_bid)
+    #   ask_price = refPrice * (1+epsilon_ask)
+
+}
 
 #create environment
 env = Environment(refPriceConfig)
@@ -143,6 +145,14 @@ def plotResults():
     plt.ylabel('Learned amount')
     plt.xlabel('Timestep')
     plt.title('QL Agent Learning Curve')
+    plt.grid(True)
+
+    #plot Qlearner inventory
+    plt.figure(numCompetitors+3)
+    plt.plot(Qagent.inventory)
+    plt.ylabel('inventory')
+    plt.xlabel('Timestep')
+    plt.title('QL Agent inventory')
     plt.grid(True)
 
 

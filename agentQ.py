@@ -3,8 +3,9 @@ from decimal import Decimal
 import random
 
 class AgentQ():
-    # actions [increase ask, reduce ask, increase bid, reduce bid, do nothing] by some constant
-    # may want to explore nudging by some ratio instead of constant 
+    # Actions for nudging is broke, budge ratio instead
+
+    #  
 
     #states q = QLearner, c = competitor 
     # [(qbid-cbid)/refprice][(qask-cask)/refprice][inventory]
@@ -16,12 +17,12 @@ class AgentQ():
         self.spread = [] # 2d array -> bid,ask at timestep
         self.profit=[0]
         self.inventory = [0]
-        self.trades = [] #record of trade with volume at each timestep 
+        self.trades = [] # record of trade with volume at each timestep 
         self.states = [] # OBSERVED States indexes (inventory,bidratio,askratio)
-        self.actions = [] #keep track of each action taken and the q value for that action
-        self.rewards = [] #rewards array
+        self.actions = [] # keep track of each action taken and the q value for that action
+        self.rewards = [] # rewards array
         self.qTable = initialQTable #the agent will be re-created each episode, but the final qtable at the end of each episode should persist
-        self.learningCurve = [0]#learned info at each timestep
+        self.learningCurve = [0] #learned info at each timestep
         return
     def selectStateIndex(self,inventory,bidRatio,askRatio):
         '''
@@ -108,9 +109,9 @@ class AgentQ():
         #print("-Action options for current state")
         #print(qOptions)
         
-        actionIndex = qOptions.argmax()
+        actionIndex = qOptions.argmax() #chosen action
         #explore or exploit
-        if(self.qLearningConfig["epsilon"] < random.random()):
+        if(self.qLearningConfig["mu"] < random.random()):
             print("-Exploring random action.")
             actionIndex = random.randrange(4)
         actionValue = qOptions[actionIndex]
@@ -120,27 +121,36 @@ class AgentQ():
 
     def quote(self, price, competitorSpread):
         delta = 0.1 #initial delta for first bid ask
+        #sloppy, fix
+        #make init spread similar to competitor uniform distr
+        #not essentially
         if(not self.spread):
             self.spread.append([(price-price*delta), (price+price*delta)])
+
         #bid/ask = last times bid ask
         oldBid = self.spread[-1][0]
         oldAsk = self.spread[-1][1] 
         
+        
+        #observable state
         bidRatio = (competitorSpread["bid"]-oldBid)/price
         askRatio = (competitorSpread["ask"]-oldAsk)/price
         inventory = self.inventory[-1]
 
         stateIndex = self.selectStateIndex(inventory,bidRatio,askRatio)
         #update with current (pretrade) state
+
         self.states.append(stateIndex)
         actionIndex, actionValue = self.pickAction(stateIndex)
         #print("State: " + str(stateIndex) )
         #print("Old actions:")
         #print(self.qTable[stateIndex[0]][stateIndex[1]][stateIndex[2]])
         #print("Action chosen: " + str(actionIndex) + " : " + str(actionValue))
-            
+
         #move bid/ask based on state and Q
+
         nudgeConstant = self.qLearningConfig["nudge"]
+        
         if(actionIndex ==0):
             oldBid = oldBid + nudgeConstant
         elif(actionIndex==1):
@@ -153,20 +163,22 @@ class AgentQ():
         self.spread.append([oldBid,oldAsk])
         #update new state in settle()
 
+
         return self.spread[-1][0], self.spread[-1][1]
 
     def settle(self,sellOrder, bid, buyWinner, buyOrder, ask, sellWinner):
+        
         if self._id == buyWinner and self._id == sellWinner:
             self.inventory.append(self.inventory[-1] + buyOrder - sellOrder)
-            self.profit.append(self.profit[-1] - buyOrder*buyWinner + sellOrder*sellWinner)
+            self.profit.append(self.profit[-1] - buyOrder*bid + sellOrder*ask)
             self.trades.append(buyOrder - sellOrder)#record trade
         elif self._id == buyWinner:
             self.inventory.append(self.inventory[-1] + buyOrder)
-            self.profit.append(self.profit[-1] - buyOrder*buyWinner)
+            self.profit.append(self.profit[-1] - buyOrder*bid)
             self.trades.append(buyOrder)#record trade
         elif self._id == sellWinner:
             self.inventory.append(self.inventory[-1] - sellOrder)
-            self.profit.append(self.profit[-1] + sellOrder*sellWinner)
+            self.profit.append(self.profit[-1] + sellOrder*ask)
             self.trades.append(-1*sellOrder ) #record trade (negative means a sell)
         if(self._id != sellWinner and self._id != buyWinner):
             self.profit.append(self.profit[-1])
@@ -181,13 +193,11 @@ class AgentQ():
         
         reward = self.profit[-1]-self.profit[-2]#reward from last step
         #should this be normalized?
-
+        
         #calc temporal difference   
         TD = reward + gamma*actionValue + self.actions[-1][1] #reward + discount factor times greatest new q value + q value chosen
         
         #normalize TD to [0,1] assume min,max of [-200,200]
-        #todo make this more sound
-        TD = (TD+200)/400
 
         Qold = self.actions[-1][1]
         Qnew = self.actions[-1][1] + alpha*TD
@@ -197,8 +207,10 @@ class AgentQ():
         learned = (Qnew-Qold)*reward*(min(gamma*2,1))**len(self.learningCurve)/40
     
         self.learningCurve.append(learned + self.learningCurve[-1])
+        
         updateIndex = self.states[-1]
         updateIndex.append(self.actions[-1][0])
+        
         self.updateQTensor(updateIndex,Qnew)
         
     def updateQTensor(self,index,newValue):
