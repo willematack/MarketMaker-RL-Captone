@@ -8,15 +8,15 @@ import matplotlib.pyplot as plt
 
 #simulation configuration
 step = 0.25
-time = 100000
+time = 1000
 steps = time/step
 numCompetitors = 5 
 emax = 0.05
 refPriceConfig = {
     "step": step,
     "time": time,
-    "drift": 0.015,
-    "volatility": 0.2,
+    "drift": 0.02,
+    "volatility": 0.1,
     "initValue": 20
 }
 
@@ -25,27 +25,26 @@ qConfig = {
     "mu": 0.8, #exploration coefficient (%80 of time it is greedy) *change this
     "gamma": 0.4, #discount factor
     "alpha": 0.2, #learning rate
-    "nudge": 0.5 # nudge constant in $ for moving bid/ask spread
-
-    #this is broken, need to change, need to nudge bid/ask epsilon
-    #   9 possible actions: nudging epsilon_ask and epsilon_bid
-    #   bid_price = refPrice * (1-epsilon_bid)
-    #   ask_price = refPrice * (1+epsilon_ask)
-
+    "nudge": 0.02, # nudge constant for epsilon_bid and epsilon_ask
+    "init_epsilon_bid": 0.1,
+    "init_epsilon_ask": 0.1,
+    "max_inventory": 1000,
+    "min_inventory": 1000,
 }
 
 #create environment
 env = Environment(refPriceConfig)
-#The initial state is set up kinda sloppily, may need to fix in the future
 
+#set initial tightest spread to simply be $1 outside initial ref price
+#This is not the actual tighest spread, but the QL agent wont have access to the actual spread initialy anyway
 env.updateState({
         "tightestSpread": {"bid": refPriceConfig["initValue"]-1, "ask": refPriceConfig["initValue"]+1},
         "refPrice": refPriceConfig["initValue"]
         })
 
 #create and shape random Q tensor [inventory][bid][ask][actions]
-qTable = np.random.rand(2000) #array of random floats between 0-1
-qTable = np.reshape(qTable, (4,10,10,5))
+qTable = np.random.rand(7200) #array of random floats between 0-1
+qTable = np.reshape(qTable, (8,10,10,9))
 
 #create Q learning agent
 Qagent = AgentQ(qConfig,qTable,numCompetitors)
@@ -78,17 +77,26 @@ while(not done):
         "bid":env.states[-1]["tightestSpread"]["bid"],
         "ask":env.states[-1]["tightestSpread"]["ask"],
     }
-    bid[-1], ask[-1] = Qagent.quote(price,competitorSpread)
+    bid[-1], ask[-1] = Qagent.quote(price,competitorSpread)# add qagent bid and ask to end of bid and ask arrays
     
     #profit calc for learner
     sellWinner = ask.argmin()
     buyWinner = bid.argmax()
+    #cap inventory at max, agent cannot buy if it will max out
+    if(Qagent.inventory[-1] + buyOrder > qConfig["max_inventory"]):
+        buyWinner = bid[:-1].argmax()
+    #cap inventory at min, agent cannot buy if it will drop below
+    if(Qagent.inventory[-1] - sellOrder < qConfig["min_inventory"]):
+        sellWinner = ask[:-1].argmin()
+    
     #profit calculations for each agent
     for i in range(numCompetitors):
             agents[i].settle(sellOrder, bid[buyWinner], buyWinner, buyOrder, ask[sellWinner], sellWinner)
     Qagent.settle(sellOrder, bid[buyWinner], buyWinner, buyOrder, ask[sellWinner], sellWinner)
+    
+    #prevent QL agent from being a part of tightest spread
     env.updateState({
-        "tightestSpread": {"bid": max(bid), "ask": min(ask)},
+        "tightestSpread": {"bid": max(bid[:-1]), "ask": min(ask[:-1])},
         "refPrice": price
         })
     
