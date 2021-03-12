@@ -209,7 +209,7 @@ class AgentQ():
         
         reward = self.profit[-1]-self.profit[-2]#profit made from last step
         #calc temporal difference   
-        TD = reward + gamma*actionValue + self.actions[-1][1] #reward + (discount factor)*(largest q value in new state) + (q value chosen)
+        TD = reward + gamma*actionValue - self.actions[-1][1] #reward + (discount factor)*(largest q value in new state) + (q value chosen)
         Qold = self.actions[-1][1]
         Qnew = self.actions[-1][1] + alpha*TD
         
