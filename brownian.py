@@ -5,6 +5,7 @@ from math import sqrt
 #double check this is working right
 #seems to go down when drift is 0
 
+#change
 def gmbrownian(step, time, drift, volatility, initValue):
     iter = int(time/step)
     price = np.zeros(iter)
