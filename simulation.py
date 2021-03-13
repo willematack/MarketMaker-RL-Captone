@@ -3,19 +3,20 @@ import time as TIME
 
 from environment import Environment
 from agent import Agent
+from agent2 import Agent2
 from agentQ import AgentQ
 import matplotlib.pyplot as plt
 
 #simulation configuration
 step = 0.25
-time = 1000
+time = 10000
 steps = time/step
 numCompetitors = 5 
-emax = 0.05
+emax = 0.3 # updated to be more realistic/useful 
 refPriceConfig = {
     "step": step,
     "time": time,
-    "drift": 0.02,
+    "drift": 0, #Test at 0 to be closer to math model
     "volatility": 0.1,
     "initValue": 20
 }
@@ -23,7 +24,7 @@ refPriceConfig = {
 #Qlearner configuration
 qConfig = {
     "mu": 0.8, #exploration coefficient (%80 of time it is greedy) *change this
-    "gamma": 0.4, #discount factor
+    "gamma": 0.99, #discount factor (should be ~1 due to high number of timesteps)
     "alpha": 0.2, #learning rate
     "nudge": 0.02, # nudge constant for epsilon_bid and epsilon_ask
     "init_epsilon_bid": 0.1,
@@ -65,14 +66,12 @@ while(not done):
     #spreads for competitors and Qlearner
     bid = np.zeros(numCompetitors+1)
     ask = np.zeros(numCompetitors+1)
-
     
     #get bids/asks from market maker competitors
     for i in range(numCompetitors):
         bid[i], ask[i] = agents[i].quote(price, buyOrder, sellOrder)
     
     #get bid/ask from qlearner (with bid/ask from last timestep)
-
     competitorSpread = {
         "bid":env.states[-1]["tightestSpread"]["bid"],
         "ask":env.states[-1]["tightestSpread"]["ask"],

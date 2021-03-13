@@ -31,7 +31,8 @@ class AgentQ():
         and then import it to this file. I looked up some other ways and got lazy.
         Python also doesnt even have built in switch statements, crazy 
         '''
-        #inventory
+        # inventory should be binned evenly (8 bins from -1000 to 1000)
+        # Pretty sure spence fixed this already, if not then fix
         if(inventory <= -150):
             inventoryIndex =0
         elif(inventory >-150 and inventory <=-100):
@@ -114,12 +115,14 @@ class AgentQ():
         #pick optimal action based on index and q values
         qOptions = self.qTable[stateIndex[0]][stateIndex[1]][stateIndex[2]]
         actionIndex = qOptions.argmax() #chosen action
+        maxActionIndex = qOptions.argmax() #chosen action
         #explore or exploit
         if(self.qLearningConfig["mu"] < random.random()):
             actionIndex = random.randrange(8)
         actionValue = qOptions[actionIndex]
+        maxActionValue = qOptions[maxActionIndex]
         self.actions.append([actionIndex,actionValue])
-        return actionIndex, actionValue
+        return actionIndex, actionValue, maxActionIndex, maxActionValue
 
 
     def quote(self, price, competitorSpread):
@@ -131,16 +134,16 @@ class AgentQ():
         oldBid = self.spread[-1][0]
         oldAsk = self.spread[-1][1] 
                 
-        #observable state
+        #observable state for bid and ask ratios
         bidRatio = (competitorSpread["bid"]-oldBid)/price
         askRatio = (oldAsk-competitorSpread["ask"])/price
-        inventory = self.inventory[-1]
 
+        inventory = self.inventory[-1]
         stateIndex = self.selectStateIndex(inventory,bidRatio,askRatio)
         #update with current (pre trade) state
 
         self.states.append(stateIndex)
-        actionIndex, actionValue = self.pickAction(stateIndex)
+        actionIndex, actionValue, maxActionIndex, maxActionValue  = self.pickAction(stateIndex)
 
         #move bid/ask based on state and Q
         nudgeConstant = self.qLearningConfig["nudge"]
@@ -202,16 +205,18 @@ class AgentQ():
 
         #Find new (post trade) state
         stateIndex = self.selectStateIndex(self.inventory[-1],self.spread[-1][0],self.spread[-1][1])
-        actionIndex, actionValue = self.pickAction(stateIndex)
+        actionIndex, actionValue, maxActionIndex, maxActionValue  = self.pickAction(stateIndex)
 
         gamma = self.qLearningConfig["gamma"] #discount factor
         alpha = self.qLearningConfig["alpha"] #learning rate
         
-        reward = self.profit[-1]-self.profit[-2]#profit made from last step
+        reward = self.profit[-1]-self.profit[-2] #profit made from last step
         #calc temporal difference   
-        TD = reward + gamma*actionValue - self.actions[-1][1] #reward + (discount factor)*(largest q value in new state) + (q value chosen)
-        Qold = self.actions[-1][1]
+        TD = reward + gamma*maxActionValue - self.actions[-1][1] #reward + (discount factor)*(largest q value in new state) + (q value chosen)
         Qnew = self.actions[-1][1] + alpha*TD
+        
+        
+        Qold = self.actions[-1][1]
         
         #this may be deprecated, not sure
         #(new action vector - old action vector) * reward + gamme^timestep 
