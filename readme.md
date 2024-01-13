@@ -1,5 +1,5 @@
-# Capstone
-In this project, we designed an agent to learn to maximize profits in a financial markets by "market-making", that is posting simulatenous bid and offer prices. We designed the problem as a Markov Decision Process and used Q-Learning to teach our agent an optimal policy to maximize it's profits.
+# Reinforcement Learning Market Maker
+This project was my capstone projecy for my undergraduate degree in Applied Math Engineering at Queen's University. In this project, we designed an agent to learn to maximize profits in a financial markets by "market-making", that is posting simulatenous bid and offer prices. We designed the problem as a Markov Decision Process and used Q-Learning to teach our agent an optimal policy to maximize it's profits. We were able to train a market maker to learn an optimal policy to maximize profits. I learned a lot of math and code, as well as communication skills from this project, and it sparked a stronger interest in ML (and RL in particular) for me! A brief description of filed follows:
 
 ## demand.py
 Generates the market buy and sell orders. These are randomly generated and are normalized to be around
